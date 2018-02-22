@@ -66,3 +66,14 @@ def input_df(task):
                               left_index=True, right_index=True)
     result.sort_index(inplace=True)
     return result
+
+
+def task_filename(task, ext, exclude=["destination_path"]):
+    keys = task.__class__.get_param_names()
+    for key in exclude:
+        keys.remove(key)
+    params = ["{}_{}".format(k, task.to_str_params()[k]) for k in keys]
+    params = "{}__{}".format(task.__class__.__name__, "__".join(params)).upper()
+    params = params.replace("/", "-")
+    params = params.replace(".", "-")
+    return "{}.{}".format(params, ext)
