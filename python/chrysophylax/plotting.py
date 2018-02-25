@@ -12,10 +12,15 @@ def configure_date_axis(axis, period):
         max_formatter = mdates.DateFormatter("%m-%d-%Y")
         min_locator = mdates.WeekdayLocator(byweekday=[3])
         min_formatter = mdates.DateFormatter("%d")
-    if period == "1h":
+    elif period == "1h":
         max_locator = mdates.DayLocator()
-        max_formatter = mdates.DateFormatter("%m-%d-%Y")
+        max_formatter = mdates.DateFormatter("%m-%d\n%Y")
         min_locator = mdates.HourLocator(byhour=[6, 12, 18])
+        min_formatter = mdates.DateFormatter("%H:00")
+    elif period == "4h":
+        max_locator = mdates.DayLocator()
+        max_formatter = mdates.DateFormatter("%m-%d\n%Y")
+        min_locator = mdates.HourLocator(byhour=[12])
         min_formatter = mdates.DateFormatter("%H:00")
     axis.xaxis.set_major_locator(max_locator)
     axis.xaxis.set_major_formatter(max_formatter)

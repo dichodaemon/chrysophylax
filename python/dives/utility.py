@@ -5,7 +5,8 @@ import time
 
 PERIODS = {
     "1d": 1,
-    "1h": 24
+    "1h": 24,
+    "4h": 6
 }
 
 
@@ -19,6 +20,10 @@ def required_months(month, window_size, period):
     for i in xrange(months):
         yield m
         m = previous_month(m)
+
+def ongoing_month(dt):
+    today = datetime.date.today()
+    return today.year == dt.year and today.month == dt.month
 
 def previous_month(dt0):
     dt1 = dt0.replace(day=1)
@@ -53,7 +58,7 @@ def input_df(task):
         t = task_type(r)
         if t not in data:
             data[t] = []
-        new_data = pd.read_csv(r.output().path, index_col=0,
+        new_data = pd.read_csv(r.target.path, index_col=0,
                                parse_dates=True)
         data[t].append(new_data)
     result = None
@@ -68,7 +73,7 @@ def input_df(task):
     return result
 
 
-def task_filename(task, ext, exclude=["destination_path"]):
+def task_filename(task, ext, suffix=None, exclude=["destination_path"]):
     keys = task.__class__.get_param_names()
     for key in exclude:
         keys.remove(key)
@@ -76,4 +81,7 @@ def task_filename(task, ext, exclude=["destination_path"]):
     params = "{}__{}".format(task.__class__.__name__, "__".join(params)).upper()
     params = params.replace("/", "-")
     params = params.replace(".", "-")
-    return "{}.{}".format(params, ext)
+    if suffix is not None:
+        return "{}-{}.{}".format(params, suffix, ext)
+    else:
+        return "{}.{}".format(params, ext)

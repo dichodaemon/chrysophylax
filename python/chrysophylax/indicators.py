@@ -79,9 +79,7 @@ def trade_step(date, price, balance,
                     else:
                         trade["exit_longs"] = ",".join(exit_longs)
                 else:
-                    if trade["entry_price"] < trade["exit_price"]:
-                        trade["contracts"] *= 2
-                    trade["profit"] = (trade["exit_price"] - trade["entry_price"]) \
+                    trade["profit"] = -(trade["exit_price"] - trade["entry_price"]) \
                                       * trade["contracts"]
                     balance += trade["profit"]
                     if is_a_stop:
@@ -131,7 +129,7 @@ def trade_step(date, price, balance,
                     "stop_loss": stop_loss,
                     "trailing_stop": trailing_stop,
                     "entry_time": date,
-                    "contracts": -trade_amount / price,
+                    "contracts": trade_amount / price,
                     "entry_longs": ",".join(entry_longs),
                     "entry_shorts": ",".join(entry_shorts)
                 }
