@@ -17,20 +17,21 @@ class OHLCV(luigi.Task):
 
     def output(self):
         if ut.ongoing_month(self.month):
-            path = os.path.join(self.destination_path,
+            path = os.path.join(self.destination_path, "raw",
                                 ut.task_filename(self, "csv", suffix="PARTIAL"))
             self.target = luigi.LocalTarget(path)
             yield self.target
             self.rerun = RunAnywayTarget(self)
             yield self.rerun
         else:
-            path = os.path.join(self.destination_path,
+            path = os.path.join(self.destination_path, "raw",
                                 ut.task_filename(self, "csv"))
             self.target = luigi.LocalTarget(path)
             yield self.target
             self.rerun = None
 
     def run(self):
+        self.target.makedirs()
         exchange = ccxt.__dict__[self.exchange]()
         time.sleep(1)
         exchange.load_markets()

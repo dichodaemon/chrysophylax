@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 import ccxt
+import pandas as pd
+import sys
 
-symbols = set()
 
 potential_portfolio = [
     "BTC", "ETH",
@@ -16,22 +17,29 @@ potential_portfolio = [
     "DCR", "ZCL", "ZRX", "KCS", "ARDR", "R",
     "ARK", "DRGN", "GAS", "BAT"
 ]
-for e_name in ccxt.exchanges:
-    if e_name in ["bitstamp", "cryptopia", "hitbtc", "gdax", "kraken",
-                  "binance"]:
-        exchange = ccxt.__dict__[e_name]()
-        try:
-            exchange.load_markets()
-        except ValueError:
-            pass
-        if exchange.markets is not None:
-            for m in exchange.markets:
-                if "/" in m:
+
+exchanges = ["kraken", "gdax", "binance", "bitstamp"]
+pairs = set()
+symbols = set()
+
+for e_name in exchanges:
+    exchange = ccxt.__dict__[e_name]()
+    try:
+        exchange.load_markets()
+    except ValueError:
+        pass
+    if exchange.markets is not None:
+        for m in exchange.markets:
+            if "/" in m:
+                if not m in pairs:
                     if m.split("/")[1] in ["USD", "BTC", "ETH"] \
                        and m.split("/")[0] in potential_portfolio:
                         symbols.add((e_name, m))
+                        pairs.add(m)
 symbols = list(symbols)
 symbols.sort()
-print "exchange,pair"
+result = []
 for exchange, pair in symbols:
-    print exchange, pair
+    result.append({"exchange": exchange, "pair":pair})
+result = pd.DataFrame(result)
+result.to_csv(sys.argv[1])

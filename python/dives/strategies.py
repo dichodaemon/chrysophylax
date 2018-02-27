@@ -23,7 +23,7 @@ class Strategy(luigi.Task):
     destination_path = luigi.Parameter()
 
     def output(self):
-        path = os.path.join(self.destination_path,
+        path = os.path.join(self.destination_path, "strategies",
                             ut.task_filename(self, "csv"))
         self.target = luigi.LocalTarget(path)
         yield self.target
@@ -36,7 +36,8 @@ class StrategyFlags(Strategy):
     FN = None
 
     def run(self):
-        data = ut.input_df(self)
+        self.target.makedirs()
+        data = ut.input_df(self.requires())
         self.FN(data)
         data.to_csv(self.target.path)
         if self.rerun is not None:
@@ -68,9 +69,9 @@ class SimpleTurtleFlags(StrategyFlags):
                     self.destination_path)
             for days in set([self.entry, self.exit]):
                 yield di.MaxInWindow(self.pair, self.exchange, m, self.period,
-                                     self.destination_path, days)
+                                     self.destination_path, days, "high")
                 yield di.MinInWindow(self.pair, self.exchange, m, self.period,
-                                     self.destination_path, days)
+                                     self.destination_path, days, "low")
             yield di.AverageTrueRange(self.pair, self.exchange, m, self.period,
                                       self.destination_path, 20)
 

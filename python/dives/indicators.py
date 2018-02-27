@@ -15,7 +15,6 @@ class Indicator(luigi.Task):
     period = luigi.Parameter(default="1d")
     destination_path = luigi.Parameter()
     COLUMN_NAME = ""
-    FILE_NAME = ""
     FN = None
 
     def column_name(self):
@@ -23,21 +22,22 @@ class Indicator(luigi.Task):
 
     def output(self):
         if ut.ongoing_month(self.month):
-            path = os.path.join(self.destination_path,
+            path = os.path.join(self.destination_path, "indicators",
                                 ut.task_filename(self, "csv", suffix="PARTIAL"))
             self.target = luigi.LocalTarget(path)
             yield self.target
             self.rerun = RunAnywayTarget(self)
             yield self.rerun
         else:
-            path = os.path.join(self.destination_path,
+            path = os.path.join(self.destination_path, "indicators",
                                 ut.task_filename(self, "csv"))
             self.target = luigi.LocalTarget(path)
             yield self.target
             self.rerun = None
 
     def run(self):
-        data = ut.input_df(self)
+        self.target.makedirs()
+        data = ut.input_df(self.requires())
         name = self.column_name()
         data[name] = self.FN(data)
         next_m = ut.next_month(self.month, False)
@@ -64,12 +64,21 @@ class WindowedIndicator(Indicator):
 
 
 @inherits(WindowedIndicator)
-class MaxInWindow(WindowedIndicator):
+class ColumnStat(WindowedIndicator):
+    input_column = luigi.Parameter()
+
+    def column_name(self):
+        return "{}_{}_{}".format(self.input_column,
+                                 self.COLUMN_NAME,
+                                 self.window_size)
+
+@inherits(ColumnStat)
+class MaxInWindow(ColumnStat):
     COLUMN_NAME = "max"
     FN = chi.max_in_window
 
-@inherits(WindowedIndicator)
-class MinInWindow(WindowedIndicator):
+@inherits(ColumnStat)
+class MinInWindow(ColumnStat):
     COLUMN_NAME = "min"
     FN = chi.min_in_window
 
@@ -98,7 +107,7 @@ class AverageTrueRange(WindowedIndicator):
                     self.destination_path)
 
 @inherits(WindowedIndicator)
-class VolumeMovingAverage(WindowedIndicator):
-    COLUMN_NAME = "volume_ma"
-    FN = chi.volume_ma
+class MovingAverage(ColumnStat):
+    COLUMN_NAME = "ma"
+    FN = chi.moving_average
 

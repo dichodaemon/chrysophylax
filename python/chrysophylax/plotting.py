@@ -1,4 +1,10 @@
 import matplotlib.dates as mdates
+import pandas as pd
+
+
+def normalize_time(df):
+    df["time"] = pd.to_datetime(df.index)
+    df["time"] = df["time"].apply(lambda d: mdates.date2num(d.to_pydatetime()))
 
 
 def configure_date_axis(axis, period):

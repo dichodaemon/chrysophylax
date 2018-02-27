@@ -4,13 +4,13 @@ from functools import reduce
 
 
 def max_in_window(parms, data):
-    return data["high"].shift().rolling(parms.window_size).max()
+    return data[parms.input_column].shift().rolling(parms.window_size).max()
 
 def min_in_window(parms, data):
-    return data["low"].shift().rolling(parms.window_size).min()
+    return data[parms.input_column].shift().rolling(parms.window_size).min()
 
-def volume_ma(parms, data):
-    return data["volume"].rolling(parms.window_size).mean()
+def moving_average(parms, data):
+    return data[parms.input_column].rolling(parms.window_size).mean()
 
 def true_range(parms, data):
     data["hl"] = data["high"] - data["low"]
@@ -158,10 +158,10 @@ def turtle_collect_signals(parms, row):
 
 
 def turtle_prepare_signals(parms, data):
-    max_entry = "max_{}".format(parms.entry)
-    min_entry = "min_{}".format(parms.entry)
-    max_exit = "max_{}".format(parms.exit)
-    min_exit = "min_{}".format(parms.exit)
+    max_entry = "high_max_{}".format(parms.entry)
+    min_entry = "low_min_{}".format(parms.entry)
+    max_exit = "high_max_{}".format(parms.exit)
+    min_exit = "low_min_{}".format(parms.exit)
     data["entry_long"] = (data[max_entry].shift()
                                < data[max_entry])
     data["entry_short"] = (data[min_entry].shift()
