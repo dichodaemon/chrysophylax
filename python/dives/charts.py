@@ -86,13 +86,13 @@ class TurtlePlot(luigi.Task):
         chp.configure_date_axis(ax1, self.period)
         mx = np.max(ohlcv[:, -1])
         ax1.set_ylim(mx * -0.1, mx * 8)
-        ax1.get_yaxis().set_visible(False)
         up = ohlcv[:, 1] <= ohlcv[:, 4]
         down = ohlcv[:, 1] > ohlcv[:, 4]
         ax1.bar(ohlcv[up, 0], ohlcv[up, -1], 0.6 / ut.PERIODS[self.period], color="g", alpha=0.5)
         ax1.bar(ohlcv[down, 0], ohlcv[down, -1],0.6 / ut.PERIODS[self.period], color="r", alpha=0.5)
         volume_ma.plot(ax=ax1, kind="line", lw=1.0, color="dimgrey",
                        x="time", y=volume_ma.columns[0])
+        ax1.yaxis.set_visible(False)
 
         ax2 = ax1.twinx()
         ax2.tick_params(axis='both', which='major', labelsize=8)

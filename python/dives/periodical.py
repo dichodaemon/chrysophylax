@@ -20,7 +20,8 @@ class Periodical(luigi.Task):
     balance = luigi.FloatParameter(default=100000.0)
     pyramiding = luigi.IntParameter(default=1)
     max_trade_percentage = luigi.FloatParameter(default=1.0)
-    allow_shorts = luigi.BoolParameter(default=False)
+    disable_longs = luigi.BoolParameter(default=False)
+    disable_shorts = luigi.BoolParameter(default=False)
     stop_loss_multiplier = luigi.FloatParameter(default=0.0)
     trailing_stop_multiplier = luigi.FloatParameter(default=0.0)
     destination_path = luigi.Parameter()
@@ -37,7 +38,8 @@ class Periodical(luigi.Task):
                                     max_trade_percentage=self.max_trade_percentage,
                                     stop_loss_multiplier=self.stop_loss_multiplier,
                                     trailing_stop_multiplier=self.trailing_stop_multiplier,
-                                    allow_shorts=self.allow_shorts,
+                                    disable_longs=self.disable_longs,
+                                    disable_shorts=self.disable_shorts,
                                     destination_path=self.destination_path)
             break
 

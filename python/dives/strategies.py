@@ -1,4 +1,5 @@
 import chrysophylax.indicators as chi
+import chrysophylax.trade_manager as cht
 import indicators as di
 import downloads
 import luigi
@@ -19,7 +20,8 @@ class Strategy(luigi.Task):
     balance = luigi.FloatParameter(default=100000.0)
     pyramiding = luigi.IntParameter(default=1)
     max_trade_percentage = luigi.FloatParameter(default=1.0)
-    allow_shorts = luigi.BoolParameter(default=False)
+    disable_longs = luigi.BoolParameter(default=False)
+    disable_shorts = luigi.BoolParameter(default=False)
     destination_path = luigi.Parameter()
 
     def output(self):
@@ -46,12 +48,10 @@ class StrategyFlags(Strategy):
 
 @inherits(Strategy)
 class StrategyRun(Strategy):
-    FN = None
-
     def run(self):
         data = pd.read_csv(self.requires().target.path,
                            index_col=0, parse_dates=True)
-        trades = chi.execute_strategy(self, data, self.FN)
+        trades = cht.execute_strategy(self, data)
         trades.to_csv(self.target.path)
         if self.rerun is not None:
             self.rerun.done()
@@ -79,7 +79,6 @@ class SimpleTurtleFlags(StrategyFlags):
 class SimpleTurtle(StrategyRun):
     stop_loss_multiplier = luigi.FloatParameter(default=0.0)
     trailing_stop_multiplier = luigi.FloatParameter(default=0.0)
-    FN = chi.turtle_collect_signals
 
     def requires(self):
         return SimpleTurtleFlags.from_str_params(self.to_str_params())
@@ -97,7 +96,6 @@ class BuyAndHoldFlags(StrategyFlags):
 
 @inherits(BuyAndHoldFlags)
 class BuyAndHold(StrategyRun):
-    FN = chi.buy_and_hold_collect_signals
 
     def requires(self):
         return BuyAndHoldFlags.from_str_params(self.to_str_params())
