@@ -1,5 +1,6 @@
 import datetime
 import pandas as pd
+import pytz
 import os
 import time
 
@@ -23,7 +24,7 @@ def required_months(month, window_size, period):
         m = previous_month(m)
 
 def ongoing_month(dt):
-    today = datetime.date.today()
+    today = pytz.datetime.datetime.utcnow().date()
     return today.year == dt.year and today.month == dt.month
 
 def previous_month(dt0):

@@ -48,10 +48,22 @@ class StrategyFlags(Strategy):
 
 @inherits(Strategy)
 class StrategyRun(Strategy):
+    COLS = ["direction", "contracts",
+            "entry_time", "entry_label", "entry_price",
+            "exit_time", "exit_label", "exit_price",
+            "stop_loss", "trailing_stop_multiplier",
+            "profit", "r_multiple",
+            "initial_margin", "stop_loss_margin",
+            "max_drawdown",
+            "max_price", "min_price",
+            "entry_value", "exit_value",
+            "short_leverage"]
     def run(self):
         data = pd.read_csv(self.requires().target.path,
                            index_col=0, parse_dates=True)
         trades = cht.execute_strategy(self, data)
+        if self.COLS is not None:
+            trades = trades[self.COLS]
         trades.to_csv(self.target.path)
         if self.rerun is not None:
             self.rerun.done()

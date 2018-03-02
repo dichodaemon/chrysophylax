@@ -6,7 +6,6 @@ import datetime
 import indicators
 import luigi
 import matplotlib.dates as mdates
-import matplotlib.patches as patches
 import matplotlib.pylab as plt
 import numpy as np
 import os
@@ -19,8 +18,6 @@ import utility as ut
 from luigi.util import inherits
 from luigi.contrib.simulate import RunAnywayTarget
 from matplotlib import style
-from matplotlib.ticker import AutoMinorLocator
-from matplotlib.finance import candlestick_ohlc
 
 
 
@@ -83,62 +80,17 @@ class TurtlePlot(luigi.Task):
         title = "Turtle {exchange}: {pair} ({period})\n" \
                 "(entry={entry}, exit={exit})".format(**self.to_str_params())
         plt.title(title.upper(), loc="left")
-        chp.configure_date_axis(ax1, self.period)
-        mx = np.max(ohlcv[:, -1])
-        ax1.set_ylim(mx * -0.1, mx * 8)
-        up = ohlcv[:, 1] <= ohlcv[:, 4]
-        down = ohlcv[:, 1] > ohlcv[:, 4]
-        ax1.bar(ohlcv[up, 0], ohlcv[up, -1], 0.6 / ut.PERIODS[self.period], color="g", alpha=0.5)
-        ax1.bar(ohlcv[down, 0], ohlcv[down, -1],0.6 / ut.PERIODS[self.period], color="r", alpha=0.5)
-        volume_ma.plot(ax=ax1, kind="line", lw=1.0, color="dimgrey",
-                       x="time", y=volume_ma.columns[0])
-        ax1.yaxis.set_visible(False)
-
-        ax2 = ax1.twinx()
-        ax2.tick_params(axis='both', which='major', labelsize=8)
-        ax2.set_ylim(np.min(ohlcv[:, 3]) * 0.8, np.max(ohlcv[:, 2] * 1.2))
-        shadows, rects = candlestick_ohlc(ax2, ohlcv, colorup="g", width=0.6 / ut.PERIODS[self.period])
-        for rect, row in zip(rects, data.itertuples()):
-            if row.entry_long == True:
-                ax2.plot(rect.get_x(),
-                         row.open,
-                         ">", color="blue")
-            if row.exit_long == True:
-                ax2.plot(rect.get_x() + rect.get_width(),
-                         row.open,
-                         "<", color="blue")
-            if row.entry_short == True:
-                ax2.plot(rect.get_x(),
-                         row.open,
-                         ">", color="maroon")
-            if row.exit_short == True:
-                ax2.plot(rect.get_x() + rect.get_width(),
-                         row.open,
-                         "<", color="maroon")
-        for row in trades.itertuples():
-            y1 = min(row.entry_price, row.exit_price)
-            height = abs(row.entry_price - row.exit_price)
-            entry_time = mdates.date2num(pd.to_datetime(row.entry_time))
-            exit_time = mdates.date2num(pd.to_datetime(row.exit_time))
-            width = exit_time - entry_time
-            ax2.add_patch(patches.Rectangle((entry_time, y1), width, height,
-                                            facecolor="cyan", alpha=0.4))
-        max_entry = "high_max_{}".format(self.entry)
-        min_entry = "low_min_{}".format(self.entry)
-        max_exit = "high_max_{}".format(self.exit)
-        min_exit = "low_min_{}".format(self.exit)
-        ax2.fill_between(data.index.values, data[min_exit].values,
-                         data[max_entry].values, lw=0., alpha=0.2,
-                         facecolor="chartreuse")
-        ax2.fill_between(data.index.values, data[min_entry].values,
-                         data[max_exit].values, lw=0., alpha=0.2,
-                         facecolor="indianred")
-        fast_ma.plot(ax=ax2, kind="line", lw=1.0, color="orange",
-                     x="time", y=fast_ma.columns[0])
-        slow_ma.plot(ax=ax2, kind="line", lw=1.0, color="darkcyan",
-                     x="time", y=slow_ma.columns[0])
-        ax1.legend().set_visible(False)
-        ax2.legend().set_visible(False)
+        with chp.candles_and_volume(ax1, ohlcv, self.period) \
+                as (c_ax, v_ax, shadows, rects):
+            volume_ma.plot(ax=v_ax, kind="line", lw=1.0, color="dimgrey",
+                           x="time", y=volume_ma.columns[0])
+            chp.entries_and_exits(c_ax, data, rects)
+            chp.trade_detail(c_ax, trades, ohlcv)
+            chp.turtle_signals(c_ax, data, self.entry, self.exit)
+            fast_ma.plot(ax=c_ax, kind="line", lw=1.0, color="orange",
+                         x="time", y=fast_ma.columns[0])
+            slow_ma.plot(ax=c_ax, kind="line", lw=1.0, color="darkcyan",
+                         x="time", y=slow_ma.columns[0])
         plt.savefig(self.target.path, bboxinches="tight")
         plt.close("all")
         if self.rerun is not None:
