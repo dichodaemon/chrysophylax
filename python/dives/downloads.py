@@ -5,8 +5,6 @@ import pandas as pd
 import time
 import utility as ut
 
-from luigi.contrib.simulate import RunAnywayTarget
-
 
 class OHLCV(luigi.Task):
     pair = luigi.Parameter()
@@ -17,18 +15,17 @@ class OHLCV(luigi.Task):
 
     def output(self):
         if ut.ongoing_month(self.month):
+            suffix = "TMP-{:%m-%d_%H}"
+            suffix = suffix.format(ut.latest_full_period(self.period))
             path = os.path.join(self.destination_path, "raw",
-                                ut.task_filename(self, "csv", suffix="PARTIAL"))
+                                ut.task_filename(self, "csv", suffix=suffix))
             self.target = luigi.LocalTarget(path)
             yield self.target
-            self.rerun = RunAnywayTarget(self)
-            yield self.rerun
         else:
             path = os.path.join(self.destination_path, "raw",
                                 ut.task_filename(self, "csv"))
             self.target = luigi.LocalTarget(path)
             yield self.target
-            self.rerun = None
 
     def run(self):
         self.target.makedirs()
@@ -48,8 +45,10 @@ class OHLCV(luigi.Task):
         ohlcv_df["time"] = pd.to_datetime(ohlcv_df["time"])
         ohlcv_df.set_index("time", inplace=True)
         ohlcv_df.sort_index(inplace=True)
-        next_m = ut.next_month(self.month, False)
-        ohlcv_df[self.month:next_m].to_csv(self.target.path)
-        if self.rerun is not None:
-            self.rerun.done()
+        if ut.ongoing_month(self.month):
+            next_m = ut.latest_full_period(self.period)
+        else:
+            next_m = ut.next_month(self.month, False)
+        ohlcv_df[self.month:next_m].to_csv(self.target.path,
+                                           date_format=ut.DATE_FORMAT)
 

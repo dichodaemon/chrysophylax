@@ -7,8 +7,12 @@ import time
 PERIODS = {
     "1d": 1,
     "1h": 24,
-    "4h": 6
+    "4h": 6,
+    "6h": 4,
+    "8h": 3
 }
+
+DATE_FORMAT="%Y-%m-%dT%H:00:00.000Z"
 
 
 def date2ts(date):
@@ -27,12 +31,20 @@ def ongoing_month(dt):
     today = pytz.datetime.datetime.utcnow().date()
     return today.year == dt.year and today.month == dt.month
 
+def latest_full_period(period):
+    now = pytz.datetime.datetime.utcnow()
+    dt1 = now.replace(minute=0, second=0, microsecond=0)
+    period_length = 24 / PERIODS[period]
+    periods = dt1.hour / period_length
+    dt1 = dt1.replace(hour=periods * period_length)
+    dt1 = dt1 - datetime.timedelta(hours=period_length)
+    return dt1
+
 def previous_month(dt0):
     dt1 = dt0.replace(day=1)
     dt2 = dt1 - datetime.timedelta(days=1)
     dt3 = dt2.replace(day=1)
     return dt3
-
 
 def full_months(start_date, end_date):
     current = previous_month(start_date)
@@ -98,8 +110,10 @@ def task_filename(task, ext, suffix=None, exclude=[]):
     always_exclude.extend(exclude)
     keys = task.__class__.get_param_names()
     for key in always_exclude:
-        keys.remove(key)
-    params = ["{}_{}".format(k, task.to_str_params()[k]) for k in keys]
+        if key in keys:
+            keys.remove(key)
+    params = ["{}_{}".format("-".join([v[:4] for v in k.split("_")]),
+                             task.to_str_params()[k]) for k in keys]
     params = "{}__{}".format(task.__class__.__name__, "__".join(params)).upper()
     params = params.replace("/", "-")
     params = params.replace(".", "-")
@@ -107,5 +121,8 @@ def task_filename(task, ext, suffix=None, exclude=[]):
         result = "{}-{}.{}".format(params, suffix, ext)
     else:
         result = "{}.{}".format(params, ext)
-    return os.path.join(task.period.upper(),
-                        task.pair.upper().replace("/", "-"), result)
+    try:
+        return os.path.join(task.period.upper(),
+                            task.pair.upper().replace("/", "-"), result)
+    except AttributeError:
+        return os.path.join(task.period.upper(), result)

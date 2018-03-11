@@ -4,12 +4,14 @@ import numpy as np
 import pandas as pd
 
 from contextlib import contextmanager
-from matplotlib.finance import candlestick_ohlc
+from mpl_finance import candlestick_ohlc
 
 PERIODS = {
     "1d": 1,
     "1h": 24,
-    "4h": 6
+    "4h": 6,
+    "6h": 4,
+    "8h": 3
 }
 
 def normalize_time(df):
@@ -98,13 +100,11 @@ def trade_detail(ax, trades, ohlcv):
             ax.add_patch(patches.Rectangle((entry_time, y1), width, height,
                                            facecolor="cyan", alpha=0.4))
 def turtle_signals(ax, signals, entry, exit):
-        max_entry = "high_max_{}".format(entry)
-        min_entry = "low_min_{}".format(entry)
-        max_exit = "high_max_{}".format(exit)
-        min_exit = "low_min_{}".format(exit)
-        ax.fill_between(signals.index.values, signals[min_exit].values,
-                         signals[max_entry].values, lw=0., alpha=0.2,
-                         facecolor="chartreuse")
-        ax.fill_between(signals.index.values, signals[min_entry].values,
-                         signals[max_exit].values, lw=0., alpha=0.2,
-                         facecolor="indianred")
+        ax.fill_between(signals.index.values,
+                        signals["long_entry_value"].values,
+                        signals["long_exit_value"].values,
+                        lw=0., alpha=0.3, facecolor="chartreuse")
+        ax.fill_between(signals.index.values,
+                        signals["short_entry_value"].values,
+                        signals["short_exit_value"].values,
+                        lw=0., alpha=0.3, facecolor="indianred")

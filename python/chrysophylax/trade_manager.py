@@ -21,9 +21,15 @@ def execute_strategy(parms, data):
             balance = 0.0
         if balance > 0.0:
             stop_loss = row.atr_20 * parms.stop_loss_multiplier
-            contracts = balance / row.open
             if stop_loss <= 0:
                 stop_loss = row.open
+            # Do something about contract size
+            if stop_loss / row.open > parms.balance_pctg:
+                contracts = balance * parms.balance_pctg / stop_loss
+            else:
+                contracts = balance * parms.balance_pctg / stop_loss
+            # print "balance", balance, contracts * row.open
+            # print "trailing_stop", row.atr_20 * parms.trailing_stop_multiplier
             if row.entry_long == True and not tm.open_idx["short"] \
                                       and len(tm.open_idx["long"]) < 1 \
                                       and not parms.disable_longs:
@@ -34,7 +40,7 @@ def execute_strategy(parms, data):
                                       and not parms.disable_shorts:
                 balance += tm.open_trade("short", contracts, stop_loss,
                                          parms.trailing_stop_multiplier, label,
-                                         short_leverage=2)
+                                         short_leverage=parms.short_leverage)
         if row.open < row.close:
             balance += tm.update(row.time, row.low, row.atr_20)
             balance += tm.update(row.time, row.high, row.atr_20)
@@ -98,9 +104,10 @@ class TradeManager(object):
                 stop_diff = self.trailing_base * t["trailing_stop_multiplier"]
                 if t["direction"] == "long":
                     stop_value = t["max_price"] - stop_diff
-                    if self.price < stop_value:
+                    if self.price > t["entry_price"] and self.price < stop_value:
+                        print t["contracts"], stop_diff, self.price, stop_value
                         result += self.close_trade(t, "trailing_stop")
-                else:
+                elif self.price < t["entry_price"]:
                     stop_value = t["min_price"] + stop_diff
                     if self.price > stop_value:
                         result += self.close_trade(t, "trailing_stop")
@@ -162,4 +169,3 @@ class TradeManager(object):
         self.open_idx[trade["direction"]].remove(trade)
         self.closed.append(trade)
         return trade["exit_value"]
-

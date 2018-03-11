@@ -4,7 +4,6 @@ import luigi
 import os
 import utility as ut
 
-from luigi.contrib.simulate import RunAnywayTarget
 from luigi.util import inherits
 
 
@@ -22,18 +21,17 @@ class Indicator(luigi.Task):
 
     def output(self):
         if ut.ongoing_month(self.month):
+            suffix = "TMP-{:%m-%d_%H}"
+            suffix = suffix.format(ut.latest_full_period(self.period))
             path = os.path.join(self.destination_path, "indicators",
-                                ut.task_filename(self, "csv", suffix="PARTIAL"))
+                                ut.task_filename(self, "csv", suffix=suffix))
             self.target = luigi.LocalTarget(path)
             yield self.target
-            self.rerun = RunAnywayTarget(self)
-            yield self.rerun
         else:
             path = os.path.join(self.destination_path, "indicators",
                                 ut.task_filename(self, "csv"))
             self.target = luigi.LocalTarget(path)
             yield self.target
-            self.rerun = None
 
     def run(self):
         self.target.makedirs()
@@ -42,9 +40,7 @@ class Indicator(luigi.Task):
         data[name] = self.FN(data)
         next_m = ut.next_month(self.month, False)
         data = data[self.month:next_m]
-        data[[name]].to_csv(self.target.path)
-        if not self.rerun is None:
-            self.rerun.done()
+        data[[name]].to_csv(self.target.path, date_format=ut.DATE_FORMAT)
 
 @inherits(Indicator)
 class WindowedIndicator(Indicator):
@@ -105,6 +101,12 @@ class AverageTrueRange(WindowedIndicator):
             yield TrueRange(
                     self.pair, self.exchange, m, self.period,
                     self.destination_path)
+
+@inherits(WindowedIndicator)
+class EfficiencyRatio(WindowedIndicator):
+    COlUMN_NAME= "efficiency_ratio"
+    FN = chi.efficiency_ratio
+
 
 @inherits(WindowedIndicator)
 class MovingAverage(ColumnStat):

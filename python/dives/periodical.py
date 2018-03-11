@@ -6,48 +6,78 @@ import indicators as di
 import luigi
 import os
 import pandas as pd
-import strategies
+import pytz
+import simple_turtle as st
+import strategies as ds
 import utility as ut
 
-from luigi.contrib.simulate import RunAnywayTarget
 from luigi.util import inherits
 
 
-class Periodical(luigi.Task):
+class LatestSignals(luigi.Task):
     markets = luigi.Parameter()
-    period = luigi.Parameter(default="1d")
-    start_date = luigi.DateParameter()
-    balance = luigi.FloatParameter(default=100000.0)
-    pyramiding = luigi.IntParameter(default=1)
-    max_trade_percentage = luigi.FloatParameter(default=1.0)
-    disable_longs = luigi.BoolParameter(default=False)
-    disable_shorts = luigi.BoolParameter(default=False)
-    stop_loss_multiplier = luigi.FloatParameter(default=0.0)
-    trailing_stop_multiplier = luigi.FloatParameter(default=0.0)
+    period = luigi.Parameter(default="1h")
     destination_path = luigi.Parameter()
 
     def requires(self):
+        self.signals = {}
         markets = pd.read_csv(self.markets)
+        # count = 0
         for row in markets.itertuples():
-            yield charts.TurtlePlot(pair=row.pair, period=self.period,
-                                    exchange=row.exchange,
-                                    start_date=self.start_date,
-                                    end_date=datetime.datetime.now(),
-                                    balance=self.balance,
-                                    pyramiding=self.pyramiding,
-                                    max_trade_percentage=self.max_trade_percentage,
-                                    stop_loss_multiplier=self.stop_loss_multiplier,
-                                    trailing_stop_multiplier=self.trailing_stop_multiplier,
-                                    disable_longs=self.disable_longs,
-                                    disable_shorts=self.disable_shorts,
-                                    destination_path=self.destination_path)
-            break
-
+            # count += 1
+            # if count > 10:
+                # break
+            if row.exchange not in self.signals:
+                self.signals[row.exchange] = {}
+            cur_exchange = self.signals[row.exchange]
+            if row.pair not in cur_exchange:
+                cur_exchange[row.pair] = []
+            cur_pair = cur_exchange[row.pair]
+            t_params = self.to_str_params()
+            date = "{}".format(pytz.datetime.datetime.utcnow().date())
+            t_params["date"] = date
+            t_params["pair"] = row.pair
+            t_params["exchange"] = row.exchange
+            t_params["period"] = row.period
+            task = st.SimpleTurtleSignalThresholds.from_str_params(t_params)
+            cur_pair.append(task)
+            yield task
 
     def output(self):
-        self.rerun = RunAnywayTarget(self)
-        yield self.rerun
+        suffix = "TMP-{:%Y-%m-%d_%H}"
+        suffix = suffix.format(ut.latest_full_period(self.period))
+        path = os.path.join(self.destination_path, "operation",
+                            ut.task_filename(self, "csv", suffix=suffix,
+                                             exclude=["markets"]))
+        self.target = luigi.LocalTarget(path)
+        yield self.target
 
     def run(self):
-        self.rerun.done()
-
+        self.target.makedirs()
+        result = []
+        for exchange, pairs in self.signals.items():
+            for pair, strategies in pairs.items():
+                for strategy in strategies:
+                    signal_df = ut.input_df([strategy])
+                    if len(signal_df) == 0:
+                        continue
+                    row = signal_df.iloc[-1]
+                    new_row = dict(time=signal_df.index[-1],
+                                   period = row.period,
+                                   exchange=strategy.exchange,
+                                   pair=strategy.pair,
+                                   strategy=strategy.__class__.__name__,
+                                   long_entry_value=row.long_entry_value,
+                                   short_entry_value=row.short_entry_value,
+                                   long_exit_value=row.long_exit_value,
+                                   short_exit_value=row.short_exit_value,
+                                   long_entry_type=row.long_entry_type,
+                                   short_entry_type=row.short_entry_type,
+                                   long_exit_type=row.long_exit_type,
+                                   short_exit_type=row.short_exit_type)
+                    result.append(new_row)
+        result.sort(key=lambda v: v["pair"])
+        cols = ["time", "period", "exchange", "pair", "strategy"]
+        cols.extend(ds.SignalThresholds.COLS)
+        result_df = pd.DataFrame(result)[cols]
+        result_df.to_csv(self.target.path, date_format=ut.DATE_FORMAT)
