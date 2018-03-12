@@ -9,12 +9,13 @@ class SignalChecker(object):
     def __init__(self, market_file, data_dir):
         self.market_df = pd.read_csv(market_file)
         self.market_df = self.market_df.set_index(["exchange", "pair"])
+        self.market_df.sortlevel(inplace=True)
         self.data_dir = data_dir
         self.dfs = {}
         self.paths = {}
 
     def fetch_thresholds(self, price_row):
-        market_rows = self.market_df.loc[[price_row.exchange, price_row.pair]]
+        market_rows = self.market_df.loc[[(price_row.exchange, price_row.pair)]]
         for m_row in market_rows.itertuples():
             date = "{}".format(price_row.time.date())
             task = ut.init_class("signal", m_row, date=date,
@@ -25,10 +26,15 @@ class SignalChecker(object):
             path = task.output().next().path
             if m_row not in self.paths or path != self.paths[m_row]:
                 if not os.path.exists(path):
-                    return
-                self.dfs[m_row] = pd.read_csv(path, parse_dates=True)
+                    continue
+                self.dfs[m_row] = pd.read_csv(path, parse_dates=["time"])
                 self.paths[m_row] = path
-            yield self.dfs[m_row].iloc[0]
+            r_df = self.dfs[m_row]
+            previous_period = ut.previous_period(price_row.time, m_row.period)
+            r_df = r_df[r_df.time == ut.previous_period(price_row.time,
+                                                         m_row.period)]
+            if len(r_df) > 0:
+                yield r_df.iloc[0]
 
     def check(self, price_row):
         for th_row in self.fetch_thresholds(price_row):

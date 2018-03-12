@@ -31,14 +31,17 @@ def ongoing_month(dt):
     return today.year == dt.year and today.month == dt.month
 
 
-def latest_full_period(period):
-    now = pytz.datetime.datetime.utcnow()
-    dt1 = now.replace(minute=0, second=0, microsecond=0)
+def previous_period(date, period):
+    dt1 = date.replace(minute=0, second=0, microsecond=0)
     period_length = 24 / PERIODS[period]
     periods = dt1.hour / period_length
     dt1 = dt1.replace(hour=periods * period_length)
     dt1 = dt1 - datetime.timedelta(hours=period_length)
     return dt1
+
+
+def latest_full_period(period):
+    return previous_period(pytz.datetime.datetime.utcnow(), period)
 
 
 def previous_month(dt0):
