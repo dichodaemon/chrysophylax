@@ -1,13 +1,7 @@
-import charts
-import chrysophylax.indicators as chi
-import datetime
-import downloads
-import indicators as di
 import luigi
 import os
 import pandas as pd
 import pytz
-import simple_turtle as st
 import strategies as ds
 import utility as ut
 
@@ -22,24 +16,17 @@ class LatestSignals(luigi.Task):
     def requires(self):
         self.signals = {}
         markets = pd.read_csv(self.markets)
-        # count = 0
         for row in markets.itertuples():
-            # count += 1
-            # if count > 10:
-                # break
             if row.exchange not in self.signals:
                 self.signals[row.exchange] = {}
             cur_exchange = self.signals[row.exchange]
             if row.pair not in cur_exchange:
                 cur_exchange[row.pair] = []
             cur_pair = cur_exchange[row.pair]
-            t_params = self.to_str_params()
             date = "{}".format(pytz.datetime.datetime.utcnow().date())
-            t_params["date"] = date
-            t_params["pair"] = row.pair
-            t_params["exchange"] = row.exchange
-            t_params["period"] = row.period
-            task = st.SimpleTurtleSignalThresholds.from_str_params(t_params)
+            task = ut.init_class("signal", row, date=date, pair=row.pair,
+                                 exchange=row.exchange, period=row.period,
+                                 destination_path=self.destination_path)
             cur_pair.append(task)
             yield task
 

@@ -1,7 +1,9 @@
 import datetime
+import importlib
+import json
+import os
 import pandas as pd
 import pytz
-import os
 import time
 
 PERIODS = {
@@ -15,10 +17,6 @@ PERIODS = {
 DATE_FORMAT="%Y-%m-%dT%H:00:00.000Z"
 
 
-def date2ts(date):
-    return int(time.mktime(date.timetuple()) * 1e3)
-
-
 def required_months(month, window_size, period):
     days = window_size / PERIODS[period]
     months = days / 28 + 2
@@ -27,9 +25,11 @@ def required_months(month, window_size, period):
         yield m
         m = previous_month(m)
 
+
 def ongoing_month(dt):
     today = pytz.datetime.datetime.utcnow().date()
     return today.year == dt.year and today.month == dt.month
+
 
 def latest_full_period(period):
     now = pytz.datetime.datetime.utcnow()
@@ -40,20 +40,12 @@ def latest_full_period(period):
     dt1 = dt1 - datetime.timedelta(hours=period_length)
     return dt1
 
+
 def previous_month(dt0):
     dt1 = dt0.replace(day=1)
     dt2 = dt1 - datetime.timedelta(days=1)
     dt3 = dt2.replace(day=1)
     return dt3
-
-def full_months(start_date, end_date):
-    current = previous_month(start_date)
-    end_month = next_month(end_date)
-    while True:
-        current = next_month(current)
-        if current >= end_month:
-            break
-        yield current
 
 
 def next_month(dt0, inclusive=True):
@@ -61,6 +53,7 @@ def next_month(dt0, inclusive=True):
     if inclusive:
         return dt1
     return dt1 - datetime.timedelta(days=1)
+
 
 def months(start_d, end_d):
     m1 = next_month(previous_month(start_d))
@@ -97,6 +90,7 @@ def input_df(task_list):
     result.sort_index(inplace=True)
     return result
 
+
 def monthly_task(t_params, task_class, start_date, end_date, **kargs):
     for k, v in kargs.items():
         t_params[k] = "{}".format(v)
@@ -126,3 +120,13 @@ def task_filename(task, ext, suffix=None, exclude=[]):
                             task.pair.upper().replace("/", "-"), result)
     except AttributeError:
         return os.path.join(task.period.upper(), result)
+
+def init_class(prefix, row, **params):
+    module_name = getattr(row, "{}_module".format(prefix))
+    task_name = getattr(row, "{}_task".format(prefix))
+    parameters = getattr(row, "{}_parameters".format(prefix))
+    params.update(json.loads(parameters))
+    mod = importlib.import_module("dives.{}".format(module_name))
+    clss = getattr(mod, task_name)
+    task = clss.from_str_params(params)
+    return task

@@ -1,5 +1,5 @@
 import os
-import stmplib
+import smtplib
 
 from email.mime.application import MIMEApplication
 from email.MIMEImage import MIMEImage

@@ -1,57 +1,38 @@
 #!/usr/bin/python
-import ccxt
-import os
 import pandas as pd
-import pytz
-import time
-import smtplib
 import sys
+import yaml
 
-from dives.periodical import LatestSignals
 from garm.data_sources import LiveSource
-from ccxt.base.errors import RequestTimeout
+from garm import Mailman
+from garm import SignalChecker
+from garm import Trader
 
-class SignalChecker(object):
-    def __init__(self, market_file, data_dir):
-        self.threshold_task = LatestSignals(markets=market_file,
-                                            period="1h",
-                                            destination_path=data_dir)
-        self.threshold_df = None
-        self.last_threshold_path = ""
-
-    def fetch_thresholds(self):
-        threshold_path = self.threshold_task.output().next().path
-        if self.last_threshold_path != threshold_path:
-            if os.path.exists(threshold_path):
-                tmp_df = pd.read_csv(threshold_path, parse_dates=True)
-                self.threshold_df = tmp_df.set_index(["exchange", "pair"])
-                self.last_threshold_path = threshold_path
-        return self.threshold_df
-
-    def check(self, price_row):
-        self.fetch_thresholds()
-        if self.threshold_df is None:
-            return None
-        th_row = self.threshold_df.loc[price_row.exchange, price_row.pair]
-        signal_row = dict(time=price_row.time,
-                          pair=price_row.pair,
-                          exchange=price_row.exchange,
-                          period=th_row.period,
-                          price=price_row.price)
-        for prefix in ["long_entry", "long_exit",
-                       "short_entry", "short_exit"]:
-            s_value = getattr(th_row, "{}_value".format(prefix))
-            s_type = getattr(th_row, "{}_type".format(prefix))
-            print prefix, price_row.price, s_value, s_type
-            signal = False
-            if s_type == "price_gt":
-                signal = price_row.price > s_value
-            elif s_type == "price_lt":
-                signal = price_row.price < s_value
-            signal_row["{}_signal".format(prefix)] = signal
-        return pd.DataFrame([signal_row]).iloc[0]
 
 if __name__ == "__main__":
+    mailman = None
+    with open(sys.argv[3], "r") as fin:
+        conf = yaml.load(fin)
+        info = conf[sys.argv[4]]
+        mailman = Mailman(info["user"], info["server"], info["user"],
+                          info["password"])
+
+
     signal_checker = SignalChecker(sys.argv[1], sys.argv[2])
+    trader = Trader()
     for price_row in LiveSource(sys.argv[1], sys.argv[2]):
-        print signal_checker.check(price_row)
+        for signal_row in signal_checker.check(price_row):
+            if signal_row is not None:
+                opened, closed = trader.update(signal_row)
+                if opened:
+                    df = pd.DataFrame(opened)
+                    mailman.send_content("New trade",
+                                         ["dichodaemon@gmail.com"],
+                                         df.to_html())
+                    print df
+                if closed:
+                    df = pd.DataFrame(closed)
+                    mailman.send_content("Closed trade",
+                                         ["dichodaemon@gmail.com"],
+                                         df.to_html())
+                    print df
