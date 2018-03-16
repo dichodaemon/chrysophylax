@@ -1,8 +1,11 @@
 import ccxt
+import dives.utility as ut
+import dives.downloads as downloads
 import pandas as pd
 import time
 
 from ccxt.base.errors import RequestTimeout
+from ccxt.base.errors import ExchangeNotAvailable
 
 
 class DataSource(object):
@@ -59,6 +62,6 @@ class LiveSource(DataSource):
                 seconds = ex.rateLimit * 1e-3
                 time.sleep(seconds)
                 done = True
-            except RequestTimeout:
+            except RequestTimeout, ExchangeNotAvailable:
                 pass
         return pd.DataFrame([result]).iloc[0]

@@ -118,11 +118,12 @@ def task_filename(task, ext, suffix=None, exclude=[]):
         result = "{}-{}.{}".format(params, suffix, ext)
     else:
         result = "{}.{}".format(params, ext)
-    try:
+    if hasattr(task, "pair"):
         return os.path.join(task.period.upper(),
                             task.pair.upper().replace("/", "-"), result)
-    except AttributeError:
+    if hasattr(task, "period"):
         return os.path.join(task.period.upper(), result)
+    return result
 
 def init_class(prefix, row, **params):
     module_name = getattr(row, "{}_module".format(prefix))

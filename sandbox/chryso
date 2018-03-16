@@ -30,9 +30,22 @@ if __name__ == "__main__":
                                          ["dichodaemon@gmail.com"],
                                          df.to_html())
                     print df
+                    all_open = []
+                    for pair_open in trader.open.values():
+                        all_open.extend(pair_open)
+                    df = pd.DataFrame(all_open)
+                    df["idx"] = df["entry_time"]
+                    df.set_index("idx", inplace=True)
+                    df.sort_index(level=0, inplace=True)
+                    df.to_csv(sys.argv[5])
                 if closed:
                     df = pd.DataFrame(closed)
                     mailman.send_content("Closed trade",
                                          ["dichodaemon@gmail.com"],
                                          df.to_html())
-                    print df
+                    df = pd.DataFrame(trader.closed)
+                    df["idx"] = df["entry_time"]
+                    df.set_index("idx")
+                    df.sort_index(level=0, inplace=True)
+                    df.to_csv(sys.argv[6])
+
