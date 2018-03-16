@@ -1,8 +1,8 @@
-import downloads
+import ohlcv
 import pandas as pd
-import utility as ut
+import ham.time_utils as hamt
 
-from garm.data_sources import DataSource
+from gilles.data_sources import DataSource
 
 
 class CSVSource(DataSource):
@@ -16,13 +16,13 @@ class CSVSource(DataSource):
         self.initialize_tasks()
 
     def initialize_tasks(self):
-        for m in ut.months(self.start_date, self.end_date):
+        for m in hamt.months(self.start_date, self.end_date):
             for ticker_row in self.ticker_df.itertuples():
-                task = downloads.OHLCV(pair=ticker_row.pair,
-                                       exchange=ticker_row.exchange,
-                                       month=m,
-                                       period=ticker_row.period,
-                                       destination_path=self.data_dir)
+                task = ohlcv.OHLCV(pair=ticker_row.pair,
+                                   exchange=ticker_row.exchange,
+                                   month=m,
+                                   period=ticker_row.period,
+                                   destination_path=self.data_dir)
                 self.tasks.add(task)
 
     def merge_df(self):

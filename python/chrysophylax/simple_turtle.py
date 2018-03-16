@@ -1,6 +1,6 @@
-import chrysophylax.indicators as chi
+import garm.indicators as gari
 import indicators as di
-import downloads
+import ohlcv
 import luigi
 import strategies as ds
 import utility as ut
@@ -12,10 +12,10 @@ from luigi.util import inherits
 class SimpleTurtleSignalThresholds(ds.SignalThresholds):
     entry = luigi.IntParameter(default=20)
     exit = luigi.IntParameter(default=10)
-    FN = chi.turtle_prepare_signals
+    FN = gari.turtle_prepare_signals
 
     def requires(self):
-        yield downloads.OHLCV(
+        yield ohlcv.OHLCV(
                 self.pair, self.exchange, self.date, self.period,
                 self.destination_path)
         for days in set([self.entry, self.exit]):

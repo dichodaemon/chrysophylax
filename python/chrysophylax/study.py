@@ -5,7 +5,7 @@ import pytz
 import strategies as ds
 import utility as ut
 
-from garm.signal_checker import SignalChecker
+from gilles.signal_checker import SignalChecker
 from csv_source import CSVSource
 from luigi.util import inherits
 

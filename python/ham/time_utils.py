@@ -25,6 +25,8 @@ def required_months(month, window_size, period):
         yield m
         m = previous_month(m)
 
+def month_from_str(s):
+    return pytz.datetime.datetime.strptime(s, "%Y-%m")
 
 def ongoing_month(dt):
     today = pytz.datetime.datetime.utcnow().date()

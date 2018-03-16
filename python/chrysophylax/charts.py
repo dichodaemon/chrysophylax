@@ -1,7 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 
-import chrysophylax.plotting as chp
+import garm.plotting as garmp
 import datetime
 import indicators
 import luigi
@@ -69,20 +69,20 @@ class TurtlePlot(luigi.Task):
         max_bars = 100
         self.target.makedirs()
         data = ut.input_df([self.turtle])
-        chp.normalize_time(data)
+        garmp.normalize_time(data)
         data = data.tail(max_bars)
         # trades = ut.input_df([self.turtle])
         volume_ma = ut.input_df(self.vma)
-        chp.normalize_time(volume_ma)
+        garmp.normalize_time(volume_ma)
         volume_ma = volume_ma.tail(max_bars)
         fast_ma = ut.input_df(self.fast_ma)
-        chp.normalize_time(fast_ma)
+        garmp.normalize_time(fast_ma)
         fast_ma = fast_ma.tail(max_bars)
         slow_ma = ut.input_df(self.slow_ma)
-        chp.normalize_time(slow_ma)
+        garmp.normalize_time(slow_ma)
         slow_ma = slow_ma.tail(max_bars)
         eff_ratio = ut.input_df(self.eff_ratio)
-        chp.normalize_time(eff_ratio)
+        garmp.normalize_time(eff_ratio)
         eff_ratio = eff_ratio.tail(max_bars)
 
         style.use("ggplot")
@@ -91,13 +91,13 @@ class TurtlePlot(luigi.Task):
         title = "Turtle {exchange}: {pair} ({period})\n" \
                 "(entry={entry}, exit={exit})".format(**self.to_str_params())
         plt.suptitle(title.upper(), horizontalalignment="left")
-        with chp.candles_and_volume(ax1, ohlcv, self.period) \
+        with garmp.candles_and_volume(ax1, ohlcv, self.period) \
                 as (c_ax, v_ax, shadows, rects):
             volume_ma.plot(ax=v_ax, kind="line", lw=1.0, color="dimgrey",
                            x="time", y=volume_ma.columns[0])
-            # chp.entries_and_exits(c_ax, data, rects)
-            # chp.trade_detail(c_ax, trades, ohlcv)
-            chp.turtle_signals(c_ax, data, self.entry, self.exit)
+            # garmp.entries_and_exits(c_ax, data, rects)
+            # garmp.trade_detail(c_ax, trades, ohlcv)
+            garmp.turtle_signals(c_ax, data, self.entry, self.exit)
             fast_ma.plot(ax=c_ax, kind="line", lw=1.0, color="orange",
                          x="time", y=fast_ma.columns[0])
             slow_ma.plot(ax=c_ax, kind="line", lw=1.0, color="darkcyan",

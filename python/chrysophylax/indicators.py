@@ -1,52 +1,115 @@
-import pandas as pd
+import garm.indicators as gari
+import ohlcv
+import luigi
+import os
+import utility as ut
 
-from functools import reduce
-
-
-def max_in_window(parms, data):
-    return data[parms.input_column].rolling(parms.window_size).max()
-
-def min_in_window(parms, data):
-    return data[parms.input_column].rolling(parms.window_size).min()
-
-def moving_average(parms, data):
-    return data[parms.input_column].rolling(parms.window_size).mean()
-
-def true_range(parms, data):
-    data["hl"] = data["high"] - data["low"]
-    data["hpdc"] = data["high"] - data.close.shift()
-    data["pdcl"] = data.close.shift() - data["low"]
-    return data[["hl", "hpdc", "pdcl"]].max(axis=1)
-
-def average_true_range(parms, data):
-    return data["true_range"].rolling(parms.window_size).mean()
-
-def efficiency_ratio(parms, data):
-    movement_speed = (data.close
-                    - data.shift(parms.window_size).close).abs()
-    tmp = (data.close - data.shift().close).abs()
-    volatility = tmp.rolling(parms.window_size).sum()
-    result = movement_speed / volatility
-    return result
+from luigi.util import inherits
 
 
-def turtle_prepare_signals(parms, data):
-    max_entry = "high_max_{}".format(parms.entry)
-    min_entry = "low_min_{}".format(parms.entry)
-    max_exit = "high_max_{}".format(parms.exit)
-    min_exit = "low_min_{}".format(parms.exit)
-    data["long_entry_value"] = data[max_entry]
-    data["long_entry_type"] = "price_gt"
-    data["long_exit_value"] = data[min_exit]
-    data["long_exit_type"] = "price_lt"
-    data["short_entry_value"] = data[min_entry]
-    data["short_entry_type"] = "price_lt"
-    data["short_exit_value"] = data[max_exit]
-    data["short_exit_type"] = "price_gt"
+class Indicator(luigi.Task):
+    pair = luigi.Parameter()
+    exchange = luigi.Parameter()
+    month = luigi.MonthParameter()
+    period = luigi.Parameter(default="1d")
+    destination_path = luigi.Parameter()
+    COLUMN_NAME = ""
+    FN = None
+
+    def column_name(self):
+        return self.COLUMN_NAME
+
+    def output(self):
+        if ut.ongoing_month(self.month):
+            suffix = "TMP-{:%m-%d_%H}"
+            suffix = suffix.format(ut.latest_full_period(self.period))
+            path = os.path.join(self.destination_path, "indicators",
+                                ut.task_filename(self, "csv", suffix=suffix))
+            self.target = luigi.LocalTarget(path)
+            yield self.target
+        else:
+            path = os.path.join(self.destination_path, "indicators",
+                                ut.task_filename(self, "csv"))
+            self.target = luigi.LocalTarget(path)
+            yield self.target
+
+    def run(self):
+        self.target.makedirs()
+        data = ut.input_df(self.requires())
+        name = self.column_name()
+        data[name] = self.FN(data)
+        next_m = ut.next_month(self.month, False)
+        data = data[self.month:next_m]
+        data[[name]].to_csv(self.target.path, date_format=ut.DATE_FORMAT)
+
+@inherits(Indicator)
+class WindowedIndicator(Indicator):
+    window_size = luigi.IntParameter()
+
+    def column_name(self):
+        return self.COLUMN_NAME + "_{}".format(self.window_size)
+
+    def requires(self):
+        for t in self.requires_ohlcv():
+            yield t
+
+    def requires_ohlcv(self):
+        for m in ut.required_months(self.month, self.window_size, self.period):
+            yield ohlcv.OHLCV(self.pair, self.exchange, m, self.period,
+                                  self.destination_path)
 
 
-def buy_and_hold_prepare_signals(parms, data):
-    if row.Index.date() == parms.start_date:
-        data["entry_long"] = True
-    if row.Index.date() == parms.end_date:
-        date["exit_long"] = False
+@inherits(WindowedIndicator)
+class ColumnStat(WindowedIndicator):
+    input_column = luigi.Parameter()
+
+    def column_name(self):
+        return "{}_{}_{}".format(self.input_column,
+                                 self.COLUMN_NAME,
+                                 self.window_size)
+
+@inherits(ColumnStat)
+class MaxInWindow(ColumnStat):
+    COLUMN_NAME = "max"
+    FN = gari.max_in_window
+
+@inherits(ColumnStat)
+class MinInWindow(ColumnStat):
+    COLUMN_NAME = "min"
+    FN = gari.min_in_window
+
+@inherits(Indicator)
+class TrueRange(Indicator):
+    COLUMN_NAME = "true_range"
+    FN = gari.true_range
+
+    def requires(self):
+        yield ohlcv.OHLCV(self.pair, self.exchange,
+                                   ut.previous_month(self.month), self.period,
+                                   self.destination_path)
+        yield ohlcv.OHLCV(self.pair, self.exchange,
+                                   self.month, self.period,
+                                   self.destination_path)
+
+@inherits(WindowedIndicator)
+class AverageTrueRange(WindowedIndicator):
+    COLUMN_NAME = "atr"
+    FN = gari.average_true_range
+
+    def requires(self):
+        for m in ut.required_months(self.month, self.window_size, self.period):
+            yield TrueRange(
+                    self.pair, self.exchange, m, self.period,
+                    self.destination_path)
+
+@inherits(WindowedIndicator)
+class EfficiencyRatio(WindowedIndicator):
+    COlUMN_NAME= "efficiency_ratio"
+    FN = gari.efficiency_ratio
+
+
+@inherits(WindowedIndicator)
+class MovingAverage(ColumnStat):
+    COLUMN_NAME = "ma"
+    FN = gari.moving_average
+

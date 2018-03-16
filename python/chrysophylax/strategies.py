@@ -1,4 +1,4 @@
-import chrysophylax.trade_manager as cht
+import garm.trade_manager as gart
 import luigi
 import os
 import pandas as pd
@@ -68,7 +68,7 @@ class StrategyRun(Strategy):
     def run(self):
         data = pd.read_csv(self.requires().target.path,
                            index_col=0, parse_dates=True)
-        trades = cht.execute_strategy(self, data)
+        trades = gart.execute_strategy(self, data)
         if self.COLS is not None:
             trades = trades[self.COLS]
         trades.to_csv(self.target.path, date_format=ut.DATE_FORMAT)
