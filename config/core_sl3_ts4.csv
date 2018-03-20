@@ -1,0 +1,12 @@
+,exchange,pair,period,signal_module,signal_task,signal_parameters
+0,kraken,BCH/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+1,kraken,BTC/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+2,kraken,EOS/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+3,kraken,ETC/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+4,kraken,ETH/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+5,kraken,LTC/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+6,kraken,REP/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+7,kraken,XLM/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+8,kraken,XMR/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+9,kraken,XRP/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
+10,kraken,ZEC/USD,1d,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10, ""stop_loss_multiplier"": 3.0, ""trailing_stop_multiplier"": 4.0}"
