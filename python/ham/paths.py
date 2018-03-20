@@ -40,13 +40,20 @@ SIMPLE_TURTLE_SIGNAL_THRESHOLDS = {
                "stop_loss_multiplier", "trailing_stop_multiplier"]
 }
 
+TURTLE_SOUP_SIGNAL_THRESHOLDS = {
+    "directory": "strategies/{period}/{pair}",
+    "filename": "{class}",
+    "fields": ["exchange", "date", "entry_window", "wait",
+               "entry_multiplier", "exit_multiplier",
+               "trailing_stop_multiplier"]
+}
+
 STUDY = {
     "directory": "studies",
     "filename": "{class}",
     "fields": ["markets", "start_date", "end_date", "start_balance",
                "risk_percentage"]
 }
-
 
 DEFINITIONS = {
     "OHLCV": OHLCV,
@@ -58,6 +65,7 @@ DEFINITIONS = {
     "MovingAverage": WINDOWED_INDICATOR,
     "BuyAndHold": SIGNAL_THRESHOLDS,
     "SimpleTurtleSignalThresholds": SIMPLE_TURTLE_SIGNAL_THRESHOLDS,
+    "TurtleSoupSignalThresholds": TURTLE_SOUP_SIGNAL_THRESHOLDS,
     "Study": STUDY,
 }
 
@@ -66,7 +74,7 @@ def adjust_month(month=None, period=None, **kargs):
     result = "{:%Y-%m}".format(month)
     suffix = ""
     if tu.ongoing_month(month):
-        suffix = "P{:%d_%H}".format(tu.latest_full_period(period))
+        suffix = "PRTL{:%d_%H}".format(tu.latest_full_period(period))
     return "{}{}".format(result, suffix)
 
 def adjust_date(date=None, period=None, **kargs):
@@ -74,7 +82,7 @@ def adjust_date(date=None, period=None, **kargs):
     result = "{:%Y-%m}".format(date)
     suffix = ""
     if tu.ongoing_month(date):
-        suffix = "P{:%d_%H}".format(tu.latest_full_period(period))
+        suffix = "---{:%d_%H}".format(tu.latest_full_period(period))
     return "{}{}".format(result, suffix)
 
 
@@ -109,5 +117,8 @@ def path(definition, extension="csv", **kargs):
     filename = "{}__{}.{}".format(filename,
                                   args,
                                   extension)
-    path = os.path.join(directory, filename)
+    if "---" in filename:
+        path = os.path.join("partial", directory, filename)
+    else:
+        path = os.path.join(directory, filename)
     return path

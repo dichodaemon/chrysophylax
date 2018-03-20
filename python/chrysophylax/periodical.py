@@ -68,5 +68,6 @@ class LatestSignals(luigi.Task):
         result.sort(key=lambda v: v["pair"])
         cols = ["time", "period", "exchange", "pair", "strategy"]
         cols.extend(ds.SignalThresholds.COLS)
-        result_df = pd.DataFrame(result)[cols]
+        print self.target.path
+        result_df = pd.DataFrame(result)
         result_df.to_csv(self.target.path, date_format=hamt.DATE_FORMAT)

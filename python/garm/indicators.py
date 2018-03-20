@@ -48,6 +48,31 @@ def turtle_prepare_signals(parms, data):
     data["trailing_stop_delta"] = data[atr] * parms.trailing_stop_multiplier
 
 
+def turtle_soup_signals(parms, data):
+    min_column = "low_min_{}".format(parms.entry_window)
+    atr_column = "atr_{}".format(parms.atr_window)
+    data["setup"] = data[min_column] < data.shift()[min_column]
+    data["setup"] = (data["setup"] == True) \
+                  & (data["setup"].shift().rolling(parms.wait).max() == False)
+    data["long_entry_value"] = float("nan")
+    data["long_entry_type"] = "disabled"
+    selected = (data["setup"] == True)
+    data["long_entry_value"][selected] = \
+            data[min_column][selected] \
+            + data[atr_column][selected] * parms.entry_multiplier
+    data["long_entry_type"][selected] = "price_gt"
+    data["long_exit_value"] = float("nan")
+    data["long_exit_type"] = "disabled"
+    data["short_entry_value"] = float("nan")
+    data["short_entry_type"] = "disabled"
+    data["short_exit_value"] = float("nan")
+    data["short_exit_type"] = "disabled"
+    data["stop_loss_delta"] = data[atr_column] * \
+                              (parms.entry_multiplier + parms.exit_multiplier)
+    data["trailing_stop_delta"] = data[atr_column] \
+                                  * parms.trailing_stop_multiplier
+
+
 def buy_and_hold_prepare_signals(parms, data):
     if row.Index.date() == parms.start_date:
         data["entry_long"] = True

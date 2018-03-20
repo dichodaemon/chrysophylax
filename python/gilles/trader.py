@@ -99,6 +99,7 @@ class Trader(object):
             signal = getattr(signal_row, "{}_signal".format(prefix))
             if not (signal == True):
                 continue
+            print signal_row.time, signal_row.price
             signal_direction = prefix.split("_")[0]
             if direction is not None and direction != signal_direction:
                 continue

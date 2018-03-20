@@ -60,6 +60,8 @@ class SignalChecker(object):
                 signal = price_row.price > s_value
             elif s_type == "price_lt":
                 signal = price_row.price < s_value
+            elif s_type == "disabled":
+                signal = False
             signal_row["{}_signal".format(prefix)] = signal
         return pd.DataFrame([signal_row]).iloc[0]
 

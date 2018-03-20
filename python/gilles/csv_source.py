@@ -14,13 +14,35 @@ class CSVSource(DataSource):
     def compute_price_df(self):
         prices = []
         for row in self.ohlcv_df.itertuples():
-            columns = ["open", "low", "high", "close"]
-            if row.open > row.close:
-                columns = ["open", "high", "low", "close"]
-            for c in columns:
+            values = []
+            if row.open <= row.close:
+                values.append(row.open)
+                if row.low < row.open:
+                    values.append(row.low)
+                    values.append(0.5 * (row.low + row.open))
+                values.append(row.open)
+                values.append(0.5 * (row.open + row.close))
+                values.append(row.close)
+                if row.high > row.close:
+                    values.append(row.high)
+                    values.append(0.5 * (row.close + row.high))
+                values.append(row.close)
+            else:
+                values.append(row.open)
+                if row.high > row.open:
+                    values.append(row.high)
+                    values.append(0.5 * (row.high + row.open))
+                values.append(row.open)
+                values.append(0.5 * (row.open + row.close))
+                values.append(row.close)
+                if row.low > row.close:
+                    values.append(row.low)
+                    values.append(0.5 * (row.close + row.low))
+                values.append(row.close)
+            for v in values:
                 price = dict(time=row.time, exchange=row.exchange,
                               pair=row.pair,
-                              price=getattr(row, c))
+                              price=v)
                 prices.append(price)
         self.price_df = pd.DataFrame(prices)
 
