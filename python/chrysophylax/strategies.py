@@ -1,8 +1,10 @@
 import garm.trade_manager as gart
+import ham.paths as hamp
+import ham.time_utils as hamt
+import ham.time_utils as hamt
 import luigi
 import os
 import pandas as pd
-import utility as ut
 
 from luigi.util import inherits
 
@@ -18,31 +20,27 @@ class SignalThresholds(luigi.Task):
     COLS = ["long_entry_value", "long_entry_type",
             "long_exit_value", "long_exit_type",
             "short_entry_value", "short_entry_type",
-            "short_exit_value", "short_exit_type"]
+            "short_exit_value", "short_exit_type",
+            "stop_loss_delta", "trailing_stop_delta"]
 
     def output(self):
-        if ut.ongoing_month(self.date):
-            suffix = "TMP-{:%m-%d_%H}"
-            suffix = suffix.format(ut.latest_full_period(self.period))
-            path = os.path.join(self.destination_path, "strategies",
-                                ut.task_filename(self, "csv", suffix=suffix))
-            self.target = luigi.LocalTarget(path)
-            yield self.target
-        else:
-            path = os.path.join(self.destination_path, "strategies",
-                                ut.task_filename(self, "csv"))
-            self.target = luigi.LocalTarget(path)
-            yield self.target
+        parms = self.to_str_params()
+        cls = self.__class__.__name__
+        parms["class"] = cls
+        path = hamp.path(hamp.DEFINITIONS[cls], **parms)
+        path = os.path.join(self.destination_path, path)
+        self.target = luigi.LocalTarget(path)
+        yield self.target
 
     def run(self):
         self.target.makedirs()
-        data = ut.input_df(self.requires())
+        data = hamt.input_df(self.requires())
         data["period"] = self.period
         self.FN(data)
         col_set = set(self.COLS)
         cols = self.COLS[:]
         cols.extend([c for c in data.columns if c not in col_set])
-        data[cols].to_csv(self.target.path, date_format=ut.DATE_FORMAT)
+        data[cols].to_csv(self.target.path, date_format=hamt.DATE_FORMAT)
 
 @inherits(SignalThresholds)
 class Strategy(SignalThresholds):
@@ -71,4 +69,4 @@ class StrategyRun(Strategy):
         trades = gart.execute_strategy(self, data)
         if self.COLS is not None:
             trades = trades[self.COLS]
-        trades.to_csv(self.target.path, date_format=ut.DATE_FORMAT)
+        trades.to_csv(self.target.path, date_format=hamt.DATE_FORMAT)

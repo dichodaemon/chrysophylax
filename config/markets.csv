@@ -1,81 +1,81 @@
 ,exchange,pair,period,signal_module,signal_task,signal_parameters
-0,binance,ADA/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-1,binance,ADA/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-2,binance,AE/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-3,binance,AE/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-4,binance,ARK/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-5,binance,ARK/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-6,binance,BAT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-7,binance,BAT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-8,binance,BCH/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-9,binance,BNB/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-10,binance,BNB/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-11,binance,BTG/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-12,binance,BTG/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-13,binance,BTS/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-14,binance,BTS/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-15,binance,DASH/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-16,binance,GAS/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-17,binance,HSR/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-18,binance,HSR/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-19,binance,ICX/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-20,binance,ICX/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-21,binance,KMD/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-22,binance,KMD/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-23,binance,LTC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-24,binance,NEO/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-25,binance,NEO/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-26,binance,OMG/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-27,binance,OMG/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-28,binance,PPT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-29,binance,PPT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-30,binance,QTUM/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-31,binance,QTUM/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-32,binance,SNT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-33,binance,SNT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-34,binance,STEEM/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-35,binance,STEEM/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-36,binance,STRAT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-37,binance,STRAT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-38,binance,TRX/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-39,binance,TRX/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-40,binance,VEN/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-41,binance,VEN/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-42,binance,WAVES/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-43,binance,WAVES/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-44,binance,WTC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-45,binance,WTC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-46,binance,XLM/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-47,binance,XMR/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-48,binance,XRP/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-49,binance,XVG/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-50,binance,XVG/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-51,binance,ZEC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-52,binance,ZRX/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-53,binance,ZRX/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-54,kraken,BCH/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-55,kraken,BCH/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-56,kraken,BTC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-57,kraken,DASH/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-58,kraken,DASH/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-59,kraken,EOS/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-60,kraken,EOS/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-61,kraken,EOS/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-62,kraken,ETC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-63,kraken,ETC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-64,kraken,ETC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-65,kraken,ETH/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-66,kraken,ETH/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-67,kraken,LTC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-68,kraken,LTC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-69,kraken,REP/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-70,kraken,REP/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-71,kraken,REP/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-72,kraken,XLM/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-73,kraken,XLM/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-74,kraken,XMR/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-75,kraken,XMR/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-76,kraken,XRP/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-77,kraken,XRP/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-78,kraken,ZEC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
-79,kraken,ZEC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,{}
+0,binance,ADA/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+1,binance,ADA/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+2,binance,AE/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+3,binance,AE/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+4,binance,ARK/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+5,binance,ARK/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+6,binance,BAT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+7,binance,BAT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+8,binance,BCH/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+9,binance,BNB/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+10,binance,BNB/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+11,binance,BTG/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+12,binance,BTG/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+13,binance,BTS/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+14,binance,BTS/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+15,binance,DASH/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+16,binance,GAS/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+17,binance,HSR/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+18,binance,HSR/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+19,binance,ICX/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+20,binance,ICX/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+21,binance,KMD/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+22,binance,KMD/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+23,binance,LTC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+24,binance,NEO/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+25,binance,NEO/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+26,binance,OMG/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+27,binance,OMG/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+28,binance,PPT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+29,binance,PPT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+30,binance,QTUM/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+31,binance,QTUM/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+32,binance,SNT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+33,binance,SNT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+34,binance,STEEM/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+35,binance,STEEM/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+36,binance,STRAT/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+37,binance,STRAT/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+38,binance,TRX/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+39,binance,TRX/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+40,binance,VEN/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+41,binance,VEN/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+42,binance,WAVES/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+43,binance,WAVES/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+44,binance,WTC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+45,binance,WTC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+46,binance,XLM/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+47,binance,XMR/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+48,binance,XRP/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+49,binance,XVG/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+50,binance,XVG/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+51,binance,ZEC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+52,binance,ZRX/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+53,binance,ZRX/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+54,kraken,BCH/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+55,kraken,BCH/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+56,kraken,BTC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+57,kraken,DASH/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+58,kraken,DASH/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+59,kraken,EOS/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+60,kraken,EOS/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+61,kraken,EOS/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+62,kraken,ETC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+63,kraken,ETC/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+64,kraken,ETC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+65,kraken,ETH/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+66,kraken,ETH/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+67,kraken,LTC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+68,kraken,LTC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+69,kraken,REP/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+70,kraken,REP/ETH,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+71,kraken,REP/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+72,kraken,XLM/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+73,kraken,XLM/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+74,kraken,XMR/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+75,kraken,XMR/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+76,kraken,XRP/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+77,kraken,XRP/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+78,kraken,ZEC/BTC,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"
+79,kraken,ZEC/USD,1h,simple_turtle,SimpleTurtleSignalThresholds,"{""entry"": 20, ""exit"": 10}"

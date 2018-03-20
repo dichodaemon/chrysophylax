@@ -3,7 +3,6 @@ import indicators as di
 import ohlcv
 import luigi
 import strategies as ds
-import utility as ut
 
 from luigi.util import inherits
 
@@ -12,6 +11,9 @@ from luigi.util import inherits
 class SimpleTurtleSignalThresholds(ds.SignalThresholds):
     entry = luigi.IntParameter(default=20)
     exit = luigi.IntParameter(default=10)
+    atr_window = luigi.IntParameter(default=20)
+    stop_loss_multiplier = luigi.FloatParameter(default=3.0)
+    trailing_stop_multiplier = luigi.FloatParameter(default=3.0)
     FN = gari.turtle_prepare_signals
 
     def requires(self):
@@ -27,7 +29,7 @@ class SimpleTurtleSignalThresholds(ds.SignalThresholds):
                                  self.destination_path, days, "low")
         yield di.AverageTrueRange(self.pair, self.exchange, self.date,
                                   self.period,
-                                  self.destination_path, 20)
+                                  self.destination_path, self.atr_window)
 
 @inherits(SimpleTurtleSignalThresholds)
 class SimpleTurtle(ds.StrategyRun):

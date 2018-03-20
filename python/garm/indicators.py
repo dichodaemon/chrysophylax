@@ -35,6 +35,7 @@ def turtle_prepare_signals(parms, data):
     min_entry = "low_min_{}".format(parms.entry)
     max_exit = "high_max_{}".format(parms.exit)
     min_exit = "low_min_{}".format(parms.exit)
+    atr = "atr_{}".format(parms.atr_window)
     data["long_entry_value"] = data[max_entry]
     data["long_entry_type"] = "price_gt"
     data["long_exit_value"] = data[min_exit]
@@ -43,6 +44,8 @@ def turtle_prepare_signals(parms, data):
     data["short_entry_type"] = "price_lt"
     data["short_exit_value"] = data[max_exit]
     data["short_exit_type"] = "price_gt"
+    data["stop_loss_delta"] = data[atr] * parms.stop_loss_multiplier
+    data["trailing_stop_delta"] = data[atr] * parms.trailing_stop_multiplier
 
 
 def buy_and_hold_prepare_signals(parms, data):

@@ -15,7 +15,10 @@ class OHLCV(luigi.Task):
     destination_path = luigi.Parameter()
 
     def output(self):
-        path = hamp.path(hamp.OHLCV, **self.to_str_params())
+        parms = self.to_str_params()
+        cls = self.__class__.__name__
+        parms["class"] = cls
+        path = hamp.path(hamp.DEFINITIONS[cls], **parms)
         path = os.path.join(self.destination_path, path)
         self.target = luigi.LocalTarget(path)
         yield self.target

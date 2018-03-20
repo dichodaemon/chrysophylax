@@ -28,6 +28,10 @@ def required_months(month, window_size, period):
 def month_from_str(s):
     return pytz.datetime.datetime.strptime(s, "%Y-%m")
 
+def date_from_str(s):
+    return pytz.datetime.datetime.strptime(s, "%Y-%m-%d")
+
+
 def ongoing_month(dt):
     today = pytz.datetime.datetime.utcnow().date()
     return today.year == dt.year and today.month == dt.month
@@ -132,7 +136,7 @@ def init_class(prefix, row, **params):
     task_name = getattr(row, "{}_task".format(prefix))
     parameters = getattr(row, "{}_parameters".format(prefix))
     params.update(json.loads(parameters))
-    mod = importlib.import_module("dives.{}".format(module_name))
+    mod = importlib.import_module("chrysophylax.{}".format(module_name))
     clss = getattr(mod, task_name)
     task = clss.from_str_params(params)
     return task

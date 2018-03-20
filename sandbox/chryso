@@ -3,10 +3,10 @@ import pandas as pd
 import sys
 import yaml
 
-from garm.data_sources import LiveSource
-from garm import Mailman
-from garm import SignalChecker
-from garm import Trader
+from gilles.data_sources import LiveSource
+from gilles import Mailman
+from gilles import SignalChecker
+from gilles import Trader
 
 
 if __name__ == "__main__":
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
 
     signal_checker = SignalChecker(sys.argv[1], sys.argv[2])
-    trader = Trader()
+    trader = Trader(126000.0, 0.01)
     for price_row in LiveSource(sys.argv[1], sys.argv[2]):
         for signal_row in signal_checker.check(price_row):
             if signal_row is not None:

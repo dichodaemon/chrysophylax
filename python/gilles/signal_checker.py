@@ -1,8 +1,8 @@
-# import dives.utility as ut
+import ham.paths as hamp
+import ham.time_utils as hamt
+import json
 import os
 import pandas as pd
-
-# from dives.periodical import LatestSignals
 
 
 class SignalChecker(object):
@@ -14,28 +14,31 @@ class SignalChecker(object):
         self.dfs = {}
         self.paths = set()
 
-    def fetch_tasks(self, price_row):
+    def fetch(self, price_row):
         market_rows = self.market_df.loc[[(price_row.exchange, price_row.pair)]]
         for m_row in market_rows.itertuples():
             date = "{}".format(price_row.time.date())
-            task = ut.init_class("signal", m_row, date=date,
-                                 pair=price_row.pair,
-                                 exchange=price_row.exchange,
-                                 period=m_row.period,
-                                 destination_path=self.data_dir)
-            yield task
+            task = m_row.signal_task
+            args = dict(date=date, pair=price_row.pair,
+                        exchange=price_row.exchange,
+                        period=m_row.period,
+                        destination_path=self.data_dir)
+            args.update(json.loads(m_row.signal_parameters))
+            args.update({"class": task})
+            path = hamp.path(hamp.DEFINITIONS[task], **args)
+            yield m_row, os.path.join(self.data_dir, path)
 
-    def match_thresholds(self, task, price_row):
-        path = task.output().next().path
+    def match_thresholds(self, m_row, path, price_row):
         if path not in self.paths:
             if not os.path.exists(path):
+                print "{} not found".format(path)
                 return None
             self.dfs[path] = pd.read_csv(path, parse_dates=["time"])
             self.paths.add(path)
         r_df = self.dfs[path]
-        previous_period = ut.previous_period(price_row.time, task.period)
-        r_df = r_df[r_df.time == ut.previous_period(price_row.time,
-                                                     task.period)]
+        previous_period = hamt.previous_period(price_row.time, m_row.period)
+        r_df = r_df[r_df.time == hamt.previous_period(price_row.time,
+                                                     m_row.period)]
         if len(r_df) > 0:
             return r_df.iloc[0]
         return None
@@ -45,7 +48,9 @@ class SignalChecker(object):
                           pair=price_row.pair,
                           exchange=price_row.exchange,
                           period=threshold_row.period,
-                          price=price_row.price)
+                          price=price_row.price,
+                          stop_loss_delta=threshold_row.stop_loss_delta,
+                          trailing_stop_delta=threshold_row.trailing_stop_delta)
         for prefix in ["long_entry", "long_exit",
                        "short_entry", "short_exit"]:
             s_value = getattr(threshold_row, "{}_value".format(prefix))
@@ -59,8 +64,8 @@ class SignalChecker(object):
         return pd.DataFrame([signal_row]).iloc[0]
 
     def check(self, price_row):
-        for task in self.fetch_tasks(price_row):
-            threshold_row = self.match_thresholds(task, price_row)
+        for m_row, path in self.fetch(price_row):
+            threshold_row = self.match_thresholds(m_row, path, price_row)
             if threshold_row is not None:
                 yield self.new_signal_row(threshold_row, price_row)
 

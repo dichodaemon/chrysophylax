@@ -1,9 +1,9 @@
+import ham.time_utils as hamt
 import luigi
 import os
 import pandas as pd
 import pytz
 import strategies as ds
-import utility as ut
 
 from luigi.util import inherits
 
@@ -24,7 +24,7 @@ class LatestSignals(luigi.Task):
                 cur_exchange[row.pair] = []
             cur_pair = cur_exchange[row.pair]
             date = "{}".format(pytz.datetime.datetime.utcnow().date())
-            task = ut.init_class("signal", row, date=date, pair=row.pair,
+            task = hamt.init_class("signal", row, date=date, pair=row.pair,
                                  exchange=row.exchange, period=row.period,
                                  destination_path=self.destination_path)
             cur_pair.append(task)
@@ -32,9 +32,9 @@ class LatestSignals(luigi.Task):
 
     def output(self):
         suffix = "TMP-{:%Y-%m-%d_%H}"
-        suffix = suffix.format(ut.latest_full_period(self.period))
+        suffix = suffix.format(hamt.latest_full_period(self.period))
         path = os.path.join(self.destination_path, "operation",
-                            ut.task_filename(self, "csv", suffix=suffix,
+                            hamt.task_filename(self, "csv", suffix=suffix,
                                              exclude=["markets"]))
         self.target = luigi.LocalTarget(path)
         yield self.target
@@ -45,7 +45,7 @@ class LatestSignals(luigi.Task):
         for exchange, pairs in self.signals.items():
             for pair, strategies in pairs.items():
                 for strategy in strategies:
-                    signal_df = ut.input_df([strategy])
+                    signal_df = hamt.input_df([strategy])
                     if len(signal_df) == 0:
                         continue
                     row = signal_df.iloc[-1]
@@ -61,10 +61,12 @@ class LatestSignals(luigi.Task):
                                    long_entry_type=row.long_entry_type,
                                    short_entry_type=row.short_entry_type,
                                    long_exit_type=row.long_exit_type,
-                                   short_exit_type=row.short_exit_type)
+                                   short_exit_type=row.short_exit_type,
+                                   stop_loss_delat=row.stop_loss_delta,
+                                   trailing_stop_delta=row.trailing_stop_delta)
                     result.append(new_row)
         result.sort(key=lambda v: v["pair"])
         cols = ["time", "period", "exchange", "pair", "strategy"]
         cols.extend(ds.SignalThresholds.COLS)
         result_df = pd.DataFrame(result)[cols]
-        result_df.to_csv(self.target.path, date_format=ut.DATE_FORMAT)
+        result_df.to_csv(self.target.path, date_format=hamt.DATE_FORMAT)
