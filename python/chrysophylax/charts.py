@@ -17,11 +17,11 @@ import time
 
 from luigi.util import inherits
 from matplotlib import style
-from simple_turtle import SimpleTurtleSignalThresholds
+from simple_turtle import SimpleTurtle
 
 
 
-@inherits(SimpleTurtleSignalThresholds)
+@inherits(SimpleTurtle)
 class TurtlePlot(luigi.Task):
     volume_window = luigi.IntParameter(default=30)
     price_fast_window = luigi.IntParameter(default=30)
@@ -29,7 +29,7 @@ class TurtlePlot(luigi.Task):
 
     def requires(self):
         params = self.to_str_params()
-        self.turtle = SimpleTurtleSignalThresholds.from_str_params(params)
+        self.turtle = SimpleTurtle.from_str_params(params)
         yield self.turtle
         vma_params = self.to_str_params()
         vma_params["window_size"] = self.volume_window

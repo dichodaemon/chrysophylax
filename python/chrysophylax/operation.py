@@ -3,7 +3,7 @@ import luigi
 import os
 import pandas as pd
 import pytz
-import strategies as ds
+import strategies as chs
 
 from luigi.util import inherits
 
@@ -67,7 +67,6 @@ class LatestSignals(luigi.Task):
                     result.append(new_row)
         result.sort(key=lambda v: v["pair"])
         cols = ["time", "period", "exchange", "pair", "strategy"]
-        cols.extend(ds.SignalThresholds.COLS)
-        print self.target.path
+        cols.extend(chs.Strategy.COLS)
         result_df = pd.DataFrame(result)
         result_df.to_csv(self.target.path, date_format=hamt.DATE_FORMAT)

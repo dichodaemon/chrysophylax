@@ -30,7 +30,7 @@ def efficiency_ratio(parms, data):
     return result
 
 
-def turtle_prepare_signals(parms, data):
+def simple_turtle_signals(parms, data):
     max_entry = "high_max_{}".format(parms.entry)
     min_entry = "low_min_{}".format(parms.entry)
     max_exit = "high_max_{}".format(parms.exit)
@@ -40,10 +40,14 @@ def turtle_prepare_signals(parms, data):
     data["long_entry_type"] = "price_gt"
     data["long_exit_value"] = data[min_exit]
     data["long_exit_type"] = "price_lt"
+    data["long_setup_value"] = float("nan")
+    data["long_setup_type"] = "always_true"
     data["short_entry_value"] = data[min_entry]
     data["short_entry_type"] = "price_lt"
     data["short_exit_value"] = data[max_exit]
     data["short_exit_type"] = "price_gt"
+    data["short_setup_value"] = float("nan")
+    data["short_setup_type"] = "always_true"
     data["stop_loss_delta"] = data[atr] * parms.stop_loss_multiplier
     data["trailing_stop_delta"] = data[atr] * parms.trailing_stop_multiplier
 
@@ -73,7 +77,7 @@ def turtle_soup_signals(parms, data):
                                   * parms.trailing_stop_multiplier
 
 
-def buy_and_hold_prepare_signals(parms, data):
+def buy_and_hold_signals(parms, data):
     if row.Index.date() == parms.start_date:
         data["entry_long"] = True
     if row.Index.date() == parms.end_date:

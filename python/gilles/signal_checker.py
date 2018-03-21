@@ -11,10 +11,11 @@ class SignalChecker(object):
         self.market_df = self.market_df.set_index(["exchange", "pair"])
         self.market_df.sort_index(level=0, inplace=True)
         self.data_dir = data_dir
-        self.dfs = {}
+        self.thr_dfs = {}
+        self.setups = {}
         self.paths = set()
 
-    def fetch(self, price_row):
+    def fetch_threshold_paths(self, price_row):
         market_rows = self.market_df.loc[[(price_row.exchange, price_row.pair)]]
         for m_row in market_rows.itertuples():
             date = "{}".format(price_row.time.date())
@@ -32,16 +33,32 @@ class SignalChecker(object):
         if path not in self.paths:
             if not os.path.exists(path):
                 print "{} not found".format(path)
+                if not m_row in self.thr_dfs:
+                    return None
             else:
-                self.dfs[m_row] = pd.read_csv(path, parse_dates=["time"])
+                self.thr_dfs[m_row] = pd.read_csv(path, parse_dates=["time"])
                 self.paths.add(path)
-        r_df = self.dfs[m_row]
+        r_df = self.thr_dfs[m_row]
         previous_period = hamt.previous_period(price_row.time, m_row.period)
         r_df = r_df[r_df.time == hamt.previous_period(price_row.time,
                                                      m_row.period)]
         if len(r_df) > 0:
             return r_df.iloc[0]
         return None
+
+    def evaluate(self, prefix, threshold_row, price_row):
+        s_value = getattr(threshold_row, "{}_value".format(prefix))
+        s_type = getattr(threshold_row, "{}_type".format(prefix))
+        result = False
+        if s_type == "price_gt":
+            result = price_row.price > s_value
+        elif s_type == "price_lt":
+            result = price_row.price < s_value
+        elif s_type == "always_false":
+            result = False
+        elif s_type == "always_true":
+            result = True
+        return result
 
     def new_signal_row(self, threshold_row, price_row):
         signal_row = dict(time=price_row.time,
@@ -53,18 +70,12 @@ class SignalChecker(object):
                           trailing_stop_delta=threshold_row.trailing_stop_delta)
         for prefix in ["long_entry", "long_exit",
                        "short_entry", "short_exit"]:
-            s_value = getattr(threshold_row, "{}_value".format(prefix))
-            s_type = getattr(threshold_row, "{}_type".format(prefix))
-            signal = False
-            if s_type == "price_gt":
-                signal = price_row.price > s_value
-            elif s_type == "price_lt":
-                signal = price_row.price < s_value
+            signal = self.evaluate(prefix, threshold_row, price_row)
             signal_row["{}_signal".format(prefix)] = signal
         return pd.DataFrame([signal_row]).iloc[0]
 
     def check(self, price_row):
-        for m_row, path in self.fetch(price_row):
+        for m_row, path in self.fetch_threshold_paths(price_row):
             threshold_row = self.match_thresholds(m_row, path, price_row)
             if threshold_row is not None:
                 yield self.new_signal_row(threshold_row, price_row)

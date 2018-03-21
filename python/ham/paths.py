@@ -27,20 +27,20 @@ COLUMN_STAT = {
 }
 
 
-SIGNAL_THRESHOLDS = {
+STRATEGY = {
     "directory": "strategies/{period}/{pair}",
     "filename": "{class}",
     "fields": ["exchange", "date"]
 }
 
-SIMPLE_TURTLE_SIGNAL_THRESHOLDS = {
+SIMPLE_TURTLE = {
     "directory": "strategies/{period}/{pair}",
     "filename": "{class}",
     "fields": ["exchange", "date", "entry", "exit",
                "stop_loss_multiplier", "trailing_stop_multiplier"]
 }
 
-TURTLE_SOUP_SIGNAL_THRESHOLDS = {
+TURTLE_SOUP = {
     "directory": "strategies/{period}/{pair}",
     "filename": "{class}",
     "fields": ["exchange", "date", "entry_window", "wait",
@@ -63,9 +63,9 @@ DEFINITIONS = {
     "AverageTrueRange": WINDOWED_INDICATOR,
     "EfficiencyRatio": WINDOWED_INDICATOR,
     "MovingAverage": WINDOWED_INDICATOR,
-    "BuyAndHold": SIGNAL_THRESHOLDS,
-    "SimpleTurtleSignalThresholds": SIMPLE_TURTLE_SIGNAL_THRESHOLDS,
-    "TurtleSoupSignalThresholds": TURTLE_SOUP_SIGNAL_THRESHOLDS,
+    "BuyAndHold": STRATEGY,
+    "SimpleTurtle": SIMPLE_TURTLE,
+    "TurtleSoup": TURTLE_SOUP,
     "Study": STUDY,
 }
 

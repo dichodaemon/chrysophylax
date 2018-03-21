@@ -7,8 +7,8 @@ import strategies as chs
 from luigi.util import inherits
 
 
-@inherits(chs.SignalThresholds)
-class TurtleSoupSignalThresholds(chs.SignalThresholds):
+@inherits(chs.Strategy)
+class TurtleSoup(chs.Strategy):
     entry_window = luigi.IntParameter(default=20)
     wait = luigi.IntParameter(default=4)
     atr_window = luigi.IntParameter(default=20)
