@@ -4,7 +4,6 @@ import json
 import os
 import pandas as pd
 
-
 class SignalChecker(object):
     def __init__(self, market_file, data_dir):
         self.market_df = pd.read_csv(market_file)
@@ -12,7 +11,6 @@ class SignalChecker(object):
         self.market_df.sort_index(level=0, inplace=True)
         self.data_dir = data_dir
         self.thr_dfs = {}
-        self.setups = {}
         self.paths = set()
 
     def fetch_threshold_paths(self, price_row):
@@ -46,20 +44,6 @@ class SignalChecker(object):
             return r_df.iloc[0]
         return None
 
-    def evaluate(self, prefix, threshold_row, price_row):
-        s_value = getattr(threshold_row, "{}_value".format(prefix))
-        s_type = getattr(threshold_row, "{}_type".format(prefix))
-        result = False
-        if s_type == "price_gt":
-            result = price_row.price > s_value
-        elif s_type == "price_lt":
-            result = price_row.price < s_value
-        elif s_type == "always_false":
-            result = False
-        elif s_type == "always_true":
-            result = True
-        return result
-
     def new_signal_row(self, threshold_row, price_row):
         signal_row = dict(time=price_row.time,
                           pair=price_row.pair,
@@ -68,10 +52,19 @@ class SignalChecker(object):
                           price=price_row.price,
                           stop_loss_delta=threshold_row.stop_loss_delta,
                           trailing_stop_delta=threshold_row.trailing_stop_delta)
-        for prefix in ["long_entry", "long_exit",
-                       "short_entry", "short_exit"]:
-            signal = self.evaluate(prefix, threshold_row, price_row)
-            signal_row["{}_signal".format(prefix)] = signal
+        for direction in ["long", "short"]:
+            exp_locals = dict(trigger=threshold_row, ticker=price_row)
+            setup = threshold_row["{}_setup".format(direction)]
+            if isinstance(setup, str):
+                setup = eval(setup, {}, exp_locals)
+            entry = threshold_row["{}_entry".format(direction)]
+            if isinstance(entry, str):
+                entry = eval(entry, {}, exp_locals)
+            exit = threshold_row["{}_exit".format(direction)]
+            if isinstance(exit, str):
+                exit = eval(exit, {}, exp_locals)
+            signal_row["{}_entry_signal".format(direction)] = setup and entry
+            signal_row["{}_exit_signal".format(direction)] = exit
         return pd.DataFrame([signal_row]).iloc[0]
 
     def check(self, price_row):
@@ -79,4 +72,3 @@ class SignalChecker(object):
             threshold_row = self.match_thresholds(m_row, path, price_row)
             if threshold_row is not None:
                 yield self.new_signal_row(threshold_row, price_row)
-

@@ -36,20 +36,14 @@ def simple_turtle_signals(parms, data):
     max_exit = "high_max_{}".format(parms.exit)
     min_exit = "low_min_{}".format(parms.exit)
     atr = "atr_{}".format(parms.atr_window)
-    data["long_entry_value"] = data[max_entry]
-    data["long_entry_type"] = "price_gt"
-    data["long_exit_value"] = data[min_exit]
-    data["long_exit_type"] = "price_lt"
-    data["long_setup_value"] = float("nan")
-    data["long_setup_type"] = "always_true"
-    data["short_entry_value"] = data[min_entry]
-    data["short_entry_type"] = "price_lt"
-    data["short_exit_value"] = data[max_exit]
-    data["short_exit_type"] = "price_gt"
-    data["short_setup_value"] = float("nan")
-    data["short_setup_type"] = "always_true"
     data["stop_loss_delta"] = data[atr] * parms.stop_loss_multiplier
     data["trailing_stop_delta"] = data[atr] * parms.trailing_stop_multiplier
+    data["long_setup"] = "True"
+    data["long_entry"] = "ticker.price > trigger.{}".format(max_entry)
+    data["long_exit"] = "ticker.price < trigger.{}".format(min_exit)
+    data["short_setup"] = "True"
+    data["short_entry"] = "ticker.price < trigger.{}".format(min_entry)
+    data["short_exit"] = "ticker.price > trigger.{}".format(max_exit)
 
 
 def turtle_soup_signals(parms, data):

@@ -49,8 +49,8 @@ class Trader(object):
                         t["reason"] = "exit_flag"
                         result.append(trades.pop(0))
         trades = self.open[trade_key]
+        stopped = False
         for t in trades[:]:
-            stopped = False
             reason = "stop_loss"
             if t["direction"] == "long":
                 sl_value = t["entry_price"] - signal_row.stop_loss_delta
@@ -69,6 +69,9 @@ class Trader(object):
                               and signal_row.price > ts_value
                     reason = "trailing_stop"
             if stopped:
+                break
+        if stopped:
+            for t in trades[:]:
                 t["reason"] = reason
                 result.append(trades.pop(0))
         if not self.open[trade_key]:
@@ -92,9 +95,9 @@ class Trader(object):
     def open_trades(self, trade_key, signal_row):
         direction = None
         if trade_key in self.open:
-            if len(self.open) >= self.pyramiding:
+            if len(self.open[trade_key]) >= self.pyramiding:
                 return []
-            direction = self.open[trade_key]["direction"]
+            direction = self.open[trade_key][0]["direction"]
         for prefix in ["long_entry", "short_entry"]:
             signal = getattr(signal_row, "{}_signal".format(prefix))
             if not (signal == True):
@@ -102,6 +105,15 @@ class Trader(object):
             signal_direction = prefix.split("_")[0]
             if direction is not None and direction != signal_direction:
                 continue
+            if trade_key in self.open and self.open[trade_key]:
+                previous = self.open[trade_key][-1]
+                delta = signal_row["stop_loss_delta"]
+                if direction == "long":
+                    if signal_row.price - previous["entry_price"] < delta:
+                        continue
+                else:
+                    if previous["entry_price"] - signal_row.price < delta:
+                        continue
             pr_ratio = signal_row.price / signal_row.stop_loss_delta
             entry_value = self.balance * self.risk_percentage * pr_ratio
             contracts = entry_value / signal_row.price

@@ -16,12 +16,8 @@ class Strategy(luigi.Task):
     destination_path = luigi.Parameter()
 
     FN = None
-    COLS = ["long_entry_value", "long_entry_type",
-            "long_exit_value", "long_exit_type",
-            "long_setup_value", "long_setup_type",
-            "short_entry_value", "short_entry_type",
-            "short_exit_value", "short_exit_type",
-            "short_setup_value", "short_setup_type",
+    COLS = ["long_entry", "long_exit", "long_setup",
+            "short_entry", "short_exit", "short_setup",
             "stop_loss_delta", "trailing_stop_delta"]
 
     def output(self):

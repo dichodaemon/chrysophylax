@@ -54,14 +54,6 @@ class LatestSignals(luigi.Task):
                                    exchange=strategy.exchange,
                                    pair=strategy.pair,
                                    strategy=strategy.__class__.__name__,
-                                   long_entry_value=row.long_entry_value,
-                                   short_entry_value=row.short_entry_value,
-                                   long_exit_value=row.long_exit_value,
-                                   short_exit_value=row.short_exit_value,
-                                   long_entry_type=row.long_entry_type,
-                                   short_entry_type=row.short_entry_type,
-                                   long_exit_type=row.long_exit_type,
-                                   short_exit_type=row.short_exit_type,
                                    stop_loss_delat=row.stop_loss_delta,
                                    trailing_stop_delta=row.trailing_stop_delta)
                     result.append(new_row)

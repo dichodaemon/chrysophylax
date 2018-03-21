@@ -78,7 +78,7 @@ class Study(luigi.Task):
                                  self.start_date, self.end_date,
                                  self.destination_path)
         signal_checker = SignalChecker(self.markets, self.destination_path)
-        trader = Trader(self.start_balance, self.risk_percentage)
+        trader = Trader(self.start_balance, self.risk_percentage, pyramiding=4.0)
         for price_row in price_source:
             for signal_row in signal_checker.check(price_row):
                 if signal_row is not None:
