@@ -32,10 +32,10 @@ class SignalChecker(object):
         if path not in self.paths:
             if not os.path.exists(path):
                 print "{} not found".format(path)
-                return None
-            self.dfs[path] = pd.read_csv(path, parse_dates=["time"])
-            self.paths.add(path)
-        r_df = self.dfs[path]
+            else:
+                self.dfs[m_row] = pd.read_csv(path, parse_dates=["time"])
+                self.paths.add(path)
+        r_df = self.dfs[m_row]
         previous_period = hamt.previous_period(price_row.time, m_row.period)
         r_df = r_df[r_df.time == hamt.previous_period(price_row.time,
                                                      m_row.period)]
@@ -60,8 +60,6 @@ class SignalChecker(object):
                 signal = price_row.price > s_value
             elif s_type == "price_lt":
                 signal = price_row.price < s_value
-            elif s_type == "disabled":
-                signal = False
             signal_row["{}_signal".format(prefix)] = signal
         return pd.DataFrame([signal_row]).iloc[0]
 
